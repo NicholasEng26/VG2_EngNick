@@ -2,17 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door : MonoBehaviour
+namespace FPS
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Door : MonoBehaviour
     {
-        
-    }
+        // Outlets
+        Animator animator;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Configuration
+        public GameObject requiredSender;
+
+        // Methods
+        void Awake()
+        {
+            animator = GetComponent<Animator>();
+        }
+
+        public void Interact(GameObject sender = null)
+        {
+            bool shouldOpen = false;
+
+            // Is this a valid interaction?
+            if (!requiredSender)
+            {
+                shouldOpen = true;
+            }
+            else if (requiredSender == sender)
+            {
+                shouldOpen = true;
+            }
+
+            if (shouldOpen)
+            {
+                animator.SetTrigger("Open");
+            }
+        }
     }
 }
