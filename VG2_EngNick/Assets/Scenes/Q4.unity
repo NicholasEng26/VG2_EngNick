@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1242,7 +1242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 779e8f5bc1f98d44393cfa650eca5595, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionTarget: {fileID: 1796434283}
+  interactionTarget: {fileID: 141255599}
 --- !u!64 &1008327083
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2853,7 +2853,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4ee362f559764b439211c1013efd981, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredSender: {fileID: 1008327080}
+  requiredSender: {fileID: 0}
 --- !u!95 &1880426819
 Animator:
   serializedVersion: 5
@@ -3770,7 +3770,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 308561708171380440}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: 0.99230975, z: -0, w: -0.12378003}
   m_LocalPosition: {x: 34.3, y: 15.79, z: 61.285}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3778,7 +3778,7 @@ Transform:
   - {fileID: 5385777426567675780}
   - {fileID: 4108454818411926221}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 194.221, z: 0}
 --- !u!222 &1653881826344185628
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4525,7 +4525,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4982251326386028506}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.99230975, z: -0, w: -0.12378003}
   m_LocalPosition: {x: 34.3, y: 17.165, z: 61.285}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
