@@ -20,6 +20,13 @@ namespace FPS
                 {
                     targetDoor.Interact(gameObject); // Pass ourselves as the sender
                 }
+
+                // Lights
+                InteractLight targetLight = interactionTarget.GetComponent<InteractLight>();
+                if (targetLight != null)
+                {
+                    targetLight.Interact();
+                }
             }
 
 

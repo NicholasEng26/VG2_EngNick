@@ -11,6 +11,7 @@ namespace FPS
 
         // Configuration
         public GameObject requiredSender;
+        public int keyIdRequired = -1;  // Default -1 means no key required
 
         // Methods
         void Awake()
@@ -32,10 +33,19 @@ namespace FPS
                 shouldOpen = true;
             }
 
+            // Check required key if other requirements met
+            bool keyRequired = keyIdRequired >= 0;
+            bool keyMissing = !PlayerController.instance.keyIdsObtained.Contains(keyIdRequired);
+            if (keyRequired && keyMissing)
+            {
+                shouldOpen = false;
+            }
+
             if (shouldOpen)
             {
                 animator.SetTrigger("Open");
             }
         }
+
     }
 }

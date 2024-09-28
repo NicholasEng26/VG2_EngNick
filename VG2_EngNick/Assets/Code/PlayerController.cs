@@ -9,10 +9,14 @@ namespace FPS
     {
         public static PlayerController instance;
 
+        // State Tracking
+        public List<int> keyIdsObtained;
+
         // Methods
         void Awake()
         {
             instance = this;
+            keyIdsObtained = new List<int>();
         }
         void Update()
         {
