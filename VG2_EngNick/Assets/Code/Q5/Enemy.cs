@@ -37,7 +37,7 @@ namespace FPS
                 print("Distance: " + distance); // DEBUG distance so we can configure a threshold.
 
                 // Target the next point when we are close enough
-                if (distance <= 1.5f)
+                if (distance <= 2.5f)
                 {
                     patrolIndex++;
                     if (patrolIndex >= patrolRoute.childCount)
