@@ -11,6 +11,8 @@ namespace FPS
 
         // Outlets
         public Transform povOrigin;
+        public Transform projectileOrigin;
+        public GameObject projectilePrefab;
 
         // Confirugration
         public float attackRange;
@@ -19,7 +21,7 @@ namespace FPS
         public List<int> keyIdsObtained;
 
         // Methods
-        void PrimaryAttack()
+        void OnPrimaryAttack()
         {
             RaycastHit hit;
             bool hitSomething = Physics.Raycast(povOrigin.position, povOrigin.forward, out hit, attackRange);
@@ -32,54 +34,44 @@ namespace FPS
                 }
             }
         }
+        void OnSecondaryAttack()
+        {
+            GameObject projectile = Instantiate(projectilePrefab,
+                projectileOrigin.position,
+                Quaternion.LookRotation(povOrigin.forward));
+
+            projectile.transform.localScale = Vector3.one * 5f;
+            projectile.GetComponent<Rigidbody>().AddForce(povOrigin.forward * 25f, ForceMode.Impulse);
+        }
+
+        void OnInteract()
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(povOrigin.position, povOrigin.forward, out hit, 2f))
+            {
+                // Debug: Test first-person interactions
+                // print("Interacted with " + hit.transform.name + " from " + hit.distance + "m.");
+
+                // Doors
+                Door targetDoor = hit.transform.GetComponent<Door>();
+                if (targetDoor)
+                {
+                    targetDoor.Interact();
+                }
+
+                // Buttons
+                InteractButton targetButton = hit.transform.GetComponent<InteractButton>();
+                if (targetButton != null)
+                {
+                    targetButton.Interact();
+                }
+            }
+        }
 
         void Awake()
         {
             instance = this;
             keyIdsObtained = new List<int>();
-        }
-        void Update()
-        {
-            Keyboard keyboardInput = Keyboard.current;
-            Mouse mouseInput = Mouse.current;
-            if (keyboardInput != null && mouseInput != null)
-            {
-
-                // E KEY Interactions
-                if (keyboardInput.eKey.wasPressedThisFrame)
-                {
-                    Vector2 mousePosition = mouseInput.position.ReadValue();
-
-                    Ray ray = Camera.main.ScreenPointToRay(mousePosition);
-                    RaycastHit hit;
-                    if (Physics.Raycast(ray, out hit, 2f))
-                    {
-                        // Debug: Test first-person interactions
-                        print("Interacted with " + hit.transform.name + " from " + hit.distance + "m.");
-
-                        // Doors
-                        Door targetDoor = hit.transform.GetComponent<Door>();
-                        if (targetDoor)
-                        {
-                            targetDoor.Interact();
-                        }
-
-                        // Buttons
-                        InteractButton targetButton = hit.transform.GetComponent<InteractButton>();
-                        if (targetButton != null)
-                        {
-                            targetButton.Interact();
-                        }
-
-                    }
-                }
-
-                // Left Mouse Interactions
-                if (mouseInput.leftButton.wasPressedThisFrame)
-                {
-                    PrimaryAttack();
-                }
-            }
         }
     }
 }
