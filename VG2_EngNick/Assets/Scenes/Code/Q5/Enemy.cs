@@ -9,6 +9,7 @@ namespace FPS
     {
         // Outlets
         NavMeshAgent navAgent;
+        Animator animator;
 
         // Configuration
         public Transform priorityTarget;
@@ -23,6 +24,7 @@ namespace FPS
         void Start()
         {
             navAgent = GetComponent<NavMeshAgent>();
+            animator = GetComponent<Animator>();
         }
 
         void Update()
@@ -56,11 +58,11 @@ namespace FPS
                 if (priorityTargetDistance <= chaseDistance)
                 {
                     target = priorityTarget;
-                    GetComponent<Renderer>().material.color = Color.red;
+                    // GetComponent<Renderer>().material.color = Color.red;
                 }
                 else
                 {
-                    GetComponent<Renderer>().material.color = Color.white;
+                    // GetComponent<Renderer>().material.color = Color.white;
                 }
             }
 
@@ -68,6 +70,8 @@ namespace FPS
             {
                 navAgent.SetDestination(target.position);
             }
+
+            animator.SetFloat("velocity", navAgent.velocity.magnitude);
         }
 
     }
