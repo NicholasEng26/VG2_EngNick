@@ -913,6 +913,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38a09335d497c7245b2a05b204d6cff1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectionIndicator: {fileID: 4813320820434422028}
+  attackTarget: {fileID: 0}
+  projectilePrefab: {fileID: 7577393478170684743, guid: c6baa92207a32c048930d22757d05862, type: 3}
+  attackDistance: 10
+  attackDelay: 1
 --- !u!119 &5191859922783581252
 Projector:
   m_ObjectHideFlags: 0
@@ -1140,7 +1145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8059651185359044258
 Transform:
   m_ObjectHideFlags: 0

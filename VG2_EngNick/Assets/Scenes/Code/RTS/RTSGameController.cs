@@ -84,12 +84,19 @@ namespace RTS {
                             // Check for possible interactions
                             foreach (RaycastHit hit in hits)
                             {
+                                if (hit.collider.gameObject.layer != LayerMask.NameToLayer("Ground"))
+                                {
+                                    character.SetTarget(hit.collider.gameObject);
+                                    break;
+                                }
+
                                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
                                 {
-                                    // Move player to destination
+                                    character.SetTarget(null);
                                     character.SetDestination(hit.point);
                                 }
                             }
+
                         }
                     }
                 }
@@ -102,12 +109,13 @@ namespace RTS {
             RaycastHit[] hits = Physics.RaycastAll(selectionRaycast);
 
             // See if any are selectable
-            currentSelection.Clear();
+            DeselectAll();
             foreach (RaycastHit hit in hits)
             {
                 if (hit.collider.GetComponent<RTSCharacterController>())
                 {
                     currentSelection.Add(hit.collider.gameObject);
+                    hit.collider.SendMessage("Select", SendMessageOptions.DontRequireReceiver);
                 }
             }
         }
@@ -118,7 +126,8 @@ namespace RTS {
             RTSCharacterController[] characterControllers = FindObjectsOfType<RTSCharacterController>();
 
             // Loop through each eligible object to see if it's within our selection box boundaries
-            currentSelection.Clear();
+            DeselectAll();
+            DeselectAll();
             foreach (RTSCharacterController character in characterControllers)
             {
                 // Translate its 3D position to 2D screen space
@@ -139,8 +148,19 @@ namespace RTS {
                 if (anchoredRect.Contains(characterPosition))
                 {
                     currentSelection.Add(character.gameObject);
+                    character.SendMessage("Select", SendMessageOptions.DontRequireReceiver );
                 }
             }
         }
+        void DeselectAll()
+        {
+            foreach (GameObject selection in currentSelection)
+            {
+                selection.SendMessage("Deselect", SendMessageOptions.DontRequireReceiver);
+            }
+
+            currentSelection.Clear();
+        }
+
     }
 }
