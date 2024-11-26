@@ -6,8 +6,16 @@ using UnityEngine.InputSystem;
 namespace RTS {
     public class RTSGameController : MonoBehaviour
     {
+        // Outlets
+        public Canvas uiCanvas;
+        public RectTransform selectionBox;
+
+        // Configuration
+        float mouseDragThreshold = 3f;
+
         // State Tracking
-        public GameObject currentSelection;
+        public List<GameObject> currentSelection;
+        public Vector2 mouseClickStart;
 
         // Methods
         void Update() {
@@ -15,47 +23,124 @@ namespace RTS {
             Mouse mouse = Mouse.current;
             if (mouse != null)
             {
-                // Selection Command
+                // Start Drag
+
                 if (mouse.leftButton.wasPressedThisFrame)
                 {
-                    // Get all objects under mouse cursor
-                    Ray selectionRaycast = Camera.main.ScreenPointToRay(mouse.position.ReadValue());
-                    RaycastHit[] hits = Physics.RaycastAll(selectionRaycast);
+                    mouseClickStart = mouse.position.ReadValue();
+                }
 
-                    // See if any are selectable
-                    currentSelection = null;
-                    foreach (RaycastHit hit in hits)
+                // Handle Drag
+                if (mouse.leftButton.isPressed)
+                {
+                    Vector2 mousePosition = mouse.position.ReadValue();
+                    if (Vector2.Distance(mouseClickStart, mousePosition) > mouseDragThreshold)
                     {
-                        if (hit.collider.GetComponent<RTSCharacterController>() != null)
-                        {
-                            currentSelection = hit.collider.gameObject;
-                        }
+                        selectionBox.gameObject.SetActive(true);
+
+                        // Compute Midpoint and Assign Position
+                        Vector2 boxMidpoint = Vector2.Lerp(mouseClickStart, mousePosition, 0.5f);
+                        selectionBox.anchoredPosition = boxMidpoint / uiCanvas.scaleFactor;
+
+                        // Compute Drag Bounds and Assign Size
+                        Vector2 box = new Vector2(
+                            Mathf.Abs(mouseClickStart.x - mousePosition.x),
+                            Mathf.Abs(mouseClickStart.y - mousePosition.y)
+                        );
+                        selectionBox.sizeDelta = box / uiCanvas.scaleFactor;
                     }
                 }
 
-                // Interaction Command
-                if (mouse.rightButton.wasPressedThisFrame && currentSelection)
+                // Selection Command
+                if (mouse.leftButton.wasReleasedThisFrame)
                 {
-                    RTSCharacterController character = currentSelection.GetComponent<RTSCharacterController>();
-                    if (character)
+                    if (selectionBox.gameObject.activeInHierarchy)
                     {
-                        // Get all objects under the mouse cursor
-                        Ray selectionRaycast = Camera.main.ScreenPointToRay(mouse.position.ReadValue());
-                        RaycastHit[] hits = Physics.RaycastAll(selectionRaycast);
+                        // Mouse Drag = Get all eligible objects
+                        SelectWithinBox();
+                    }
+                    else
+                    {
+                        // Single Click
+                        SelectUnderMouse();
+                    }
 
-                        // Check for possible interactions
-                        foreach (RaycastHit hit in hits)
+                    // Hide selection box
+                    selectionBox.gameObject.SetActive(false);
+                }
+
+                // Interaction Command
+                if (mouse.rightButton.wasPressedThisFrame && currentSelection.Count > 0)
+                {
+                    foreach (GameObject selection in currentSelection)
+                    {
+                        RTSCharacterController character = selection.GetComponent<RTSCharacterController>();
+                        if (character)
                         {
-                            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+                            // Get all objects under the mouse cursor
+                            Ray selectionRaycast = Camera.main.ScreenPointToRay(mouse.position.ReadValue());
+                            RaycastHit[] hits = Physics.RaycastAll(selectionRaycast);
+
+                            // Check for possible interactions
+                            foreach (RaycastHit hit in hits)
                             {
-                                // Move player to destination
-                                character.SetDestination(hit.point);
+                                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+                                {
+                                    // Move player to destination
+                                    character.SetDestination(hit.point);
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        void SelectUnderMouse()
+        {
+            // Get all objects under mouse cursor
+            Ray selectionRaycast = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+            RaycastHit[] hits = Physics.RaycastAll(selectionRaycast);
 
+            // See if any are selectable
+            currentSelection.Clear();
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.collider.GetComponent<RTSCharacterController>())
+                {
+                    currentSelection.Add(hit.collider.gameObject);
+                }
+            }
+        }
+
+        void SelectWithinBox()
+        {
+            // TODO: Expensive. In a real production game, you would maintain an ongoing list instead
+            RTSCharacterController[] characterControllers = FindObjectsOfType<RTSCharacterController>();
+
+            // Loop through each eligible object to see if it's within our selection box boundaries
+            currentSelection.Clear();
+            foreach (RTSCharacterController character in characterControllers)
+            {
+                // Translate its 3D position to 2D screen space
+                Vector2 characterPosition = Camera.main.WorldToScreenPoint(character.transform.position);
+
+                // Adjust screen space for any UI scaling
+                characterPosition = characterPosition / uiCanvas.scaleFactor;
+
+                // Build a rectangle that represents where our selection box is on screen
+                Rect anchoredRect = new Rect(
+                    selectionBox.anchoredPosition.x - selectionBox.sizeDelta.x / 2f,
+                    selectionBox.anchoredPosition.y - selectionBox.sizeDelta.y / 2f,
+                    selectionBox.sizeDelta.x,
+                    selectionBox.sizeDelta.y
+                );
+
+                // Does the character fall inside the box
+                if (anchoredRect.Contains(characterPosition))
+                {
+                    currentSelection.Add(character.gameObject);
+                }
+            }
+        }
     }
 }
