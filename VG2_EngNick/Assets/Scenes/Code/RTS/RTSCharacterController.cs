@@ -50,39 +50,37 @@ namespace RTS
             if (attackTarget)
             {
                 // (NEXT CODE SNIPPET GOES IN HERE)
-            }
+                // Prepare to attack
+                SetDestination(attackTarget.transform.position);
+                if (Vector3.Distance(attackTarget.transform.position, transform.position) <= attackDistance)
+                {
+                    // (NEXT CODE SNIPPET GOES IN HERE)
+                    // Perform Attack
+                    if (_timeSinceLastAttack >= attackDelay)
+                    {
+                        // Reset attack timer
+                        _timeSinceLastAttack = 0;
 
-            // Prepare to attack
-            SetDestination(attackTarget.transform.position);
-            if (Vector3.Distance(attackTarget.transform.position, transform.position) <= attackDistance)
-            {
-                // (NEXT CODE SNIPPET GOES IN HERE)
-            }
+                        // Prepare attack
+                        // For prototype visibility: Attack from slightly above the player
+                        Vector3 projectileOrigin = transform.position + new Vector3(0, 2f, 0);
+                        Vector3 directionToTarget = (attackTarget.transform.position - projectileOrigin).normalized;
 
-            // Perform Attack
-            if (_timeSinceLastAttack >= attackDelay)
-            {
-                // Reset attack timer
-                _timeSinceLastAttack = 0;
+                        // Shoot projectile
+                        GameObject projectile = Instantiate(
+                            projectilePrefab,
+                            projectileOrigin,
+                            Quaternion.LookRotation(directionToTarget)
+                        );
 
-                // Prepare attack
-                // For prototype visibility: Attack from slightly above the player
-                Vector3 projectileOrigin = transform.position + new Vector3(0, 2f, 0);
-                Vector3 directionToTarget = (attackTarget.transform.position - projectileOrigin).normalized;
+                        // For prototype visibility: Make the projectile large
+                        projectile.transform.localScale = Vector3.one * 10f;
+                        projectile.GetComponent<Rigidbody>().AddForce(directionToTarget * 50f, ForceMode.Impulse);
 
-                // Shoot projectile
-                GameObject projectile = Instantiate(
-                    projectilePrefab,
-                    projectileOrigin,
-                    Quaternion.LookRotation(directionToTarget)
-                );
-
-                // For prototype visibility: Make the projectile large
-                projectile.transform.localScale = Vector3.one * 10f;
-                projectile.GetComponent<Rigidbody>().AddForce(directionToTarget * 50f, ForceMode.Impulse);
-
-                // Cleanup projectile
-                Destroy(projectile, 10f);
+                        // Cleanup projectile
+                        Destroy(projectile, 10f);
+                    }
+                }
             }
         }
 
